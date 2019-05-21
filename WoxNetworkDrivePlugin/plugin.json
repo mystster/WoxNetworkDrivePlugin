@@ -1,0 +1,12 @@
+{
+  "ID": "7CEF9A17BC1E428D997479F006AC8479",
+  "ActionKeyword": "nd",
+  "Name": "NetworkDrive",
+  "Description": "Wox NetworkDrive Copy",
+  "Author": "mystster",
+  "Version": "0.1.0",
+  "Language": "csharp",
+  "Website": "",
+  "IcoPath": "Images\\icon.png",
+  "ExecuteFileName": "WoxNetworkDrivePlugin.dll"
+}
