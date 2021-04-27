@@ -23,11 +23,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-using Kolibri;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Management;
+using System.Reflection;
 using Wox.Plugin;
+using System.Diagnostics;
 
 namespace WoxNetworkDrivePlugin
 {
@@ -35,34 +37,56 @@ namespace WoxNetworkDrivePlugin
     {
         private static readonly List<Result> networkDrives = new List<Result>();
 
+        public string Name => "NetworkDrivePlugin";
+
+        public string Description => "NetworkDrivePlugin";
 
         public void Init(PluginInitContext context)
         {
-            CreateOrUpdateNetworkDriveList();
+            Wox.Plugin.Logger.Log.Info("Start NetworkDrivePlugin init process.", MethodBase.GetCurrentMethod().DeclaringType);
 
+            CreateOrUpdateNetworkDriveList();
         }
 
         private static void CreateOrUpdateNetworkDriveList()
         {
             networkDrives.RemoveAll(_ => true);
-            var searcher = new ManagementObjectSearcher(
-            "root\\CIMV2",
-            "SELECT * FROM Win32_MappedLogicalDisk");
-
-            foreach (var item in searcher.Get())
+            foreach (var drive in System.IO.DriveInfo.GetDrives())
             {
-                networkDrives.Add(
-                    new Result()
+                if (drive.DriveType == System.IO.DriveType.Network)
+                {
+                    foreach (var (result, index) in ExecCmd($"net use {drive.Name.Replace("\\", "")}").Select((item, index) => (item, index)))
                     {
-                        Title = $"{item["Name"]} [{item["VolumeName"]}]",
-                        IcoPath = "Images\\icon.png",
-                        SubTitle = $"{item["ProviderName"]}",
-                        Action = ac =>
+                        if (index == 1)
                         {
-                            Clippy.PushUnicodeStringToClipboard($"{item["ProviderName"]}");
-                            return true;
+                            Wox.Plugin.Logger.Log.Info($"add NetworkDrive {drive.Name}->{result.Split(' ').Last()}", MethodBase.GetCurrentMethod().DeclaringType);
+                            string label;
+                            try
+                            {
+                                label = drive.VolumeLabel;
+                            }
+                            catch(Exception ex)
+                            {
+                                Wox.Plugin.Logger.Log.Warn($"Add {drive.Name} is error:{ex.Message}", MethodBase.GetCurrentMethod().DeclaringType);
+                                label = "";
+                            }
+                            networkDrives.Add(
+                                new Result()
+                                {
+                                    Title = $"{drive.Name}[{label}]",
+                                    IcoPath = "Images\\icon.png",
+                                    SubTitle = result.Split(' ').Last(),
+                                    Action = ac =>
+                                    {
+                                        Wox.Plugin.Logger.Log.Info($"copy to clipboard:{result.Split(' ').Last()}", MethodBase.GetCurrentMethod().DeclaringType);
+                                        ExecCmd($"set /P =\"{result.Split(' ').Last()}\" < nul | clip");
+                                        return true;
+                                    }
+                                });
                         }
-                    });
+                    }
+
+                }
             }
             networkDrives.Add(
                 new Result()
@@ -75,20 +99,42 @@ namespace WoxNetworkDrivePlugin
                         return true;
                     }
                 });
+            Wox.Plugin.Logger.Log.Info($"NetworkDrive is {networkDrives.Count}", MethodBase.GetCurrentMethod().DeclaringType);
         }
 
         public List<Result> Query(Query query)
         {
-            if (string.IsNullOrEmpty(query.FirstSearch))
+            if (string.IsNullOrEmpty(query?.Search))
             {
                 return networkDrives;
             }
             else
             {
                 return networkDrives
-                .Where(x => x.Title.ToLower().Contains(query.FirstSearch.ToLower()))
+                .Where(x => x.Title.ToLower().Contains(query?.Search.ToLower()))
                 .ToList();
             }
+        }
+
+        private static string[] ExecCmd(string command)
+        {
+            var p = new Process();
+
+            p.StartInfo.FileName = Environment.GetEnvironmentVariable("ComSpec");
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.RedirectStandardInput = false;
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.Arguments = $"/c {command}";
+
+            p.Start();
+
+            var results = p.StandardOutput.ReadToEnd();
+
+            p.WaitForExit();
+            p.Close();
+
+            return results.Split('\n');
         }
     }
 }
