@@ -35,7 +35,7 @@ namespace WoxNetworkDrivePlugin
 {
     public class WoxNetworkDrivePlugin : IPlugin
     {
-        private static readonly List<Result> networkDrives = new List<Result>();
+        private static readonly List<Result> networkDrives = [];
 
         public string Name => "NetworkDrivePlugin";
 
@@ -111,7 +111,7 @@ namespace WoxNetworkDrivePlugin
             else
             {
                 return networkDrives
-                .Where(x => x.Title.ToLower().Contains(query?.Search.ToLower()))
+                .Where(x => x.Title.Contains(query?.Search, StringComparison.CurrentCultureIgnoreCase))
                 .ToList();
             }
         }
