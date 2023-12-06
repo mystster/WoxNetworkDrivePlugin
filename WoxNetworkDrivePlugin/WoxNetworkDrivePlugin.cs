@@ -40,6 +40,7 @@ namespace WoxNetworkDrivePlugin
         public string Name => "NetworkDrivePlugin";
 
         public string Description => "NetworkDrivePlugin";
+        public static string PluginID => "7CEF9A17BC1E428D997479F006AC8479";
 
         public void Init(PluginInitContext context)
         {
