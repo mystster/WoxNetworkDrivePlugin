@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.22000.0</TargetFramework>
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
@@ -16,14 +16,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Management" Version="5.0.0" />
+    <PackageReference Include="System.Management" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Wox.Plugin">
-      <HintPath>Wox.Plugin.dll</HintPath>
-      <Private>true</Private>
-    </Reference>
+    <ProjectReference Include="..\pluginDll\src\common\Common.UI\Common.UI.csproj" />
+    <ProjectReference Include="..\pluginDll\src\common\ManagedCommon\ManagedCommon.csproj" />
+    <ProjectReference Include="..\pluginDll\src\modules\launcher\Wox.Plugin\Wox.Plugin.csproj" />
+    <ProjectReference Include="..\pluginDll\src\settings-ui\Settings.UI.Library\Settings.UI.Library.csproj" />
   </ItemGroup>
 
   <ItemGroup>
