@@ -1,0 +1,3 @@
+[submodule "pluginDll"]
+	path = pluginDll
+	url = https://github.com/microsoft/PowerToys.git
