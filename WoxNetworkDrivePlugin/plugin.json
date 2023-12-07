@@ -4,7 +4,7 @@
   "IsGlobal": true,
   "Name": "NetworkDrive",
   "Author": "mystster",
-  "Version": "0.1.0",
+  "Version": "1.1.0",
   "Language": "csharp",
   "Website": "http://example.local",
   "IcoPathDark": "Images\\icon.png",
