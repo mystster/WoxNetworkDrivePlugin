@@ -20,10 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\pluginDll\src\common\Common.UI\Common.UI.csproj" />
-    <ProjectReference Include="..\pluginDll\src\common\ManagedCommon\ManagedCommon.csproj" />
     <ProjectReference Include="..\pluginDll\src\modules\launcher\Wox.Plugin\Wox.Plugin.csproj" />
-    <ProjectReference Include="..\pluginDll\src\settings-ui\Settings.UI.Library\Settings.UI.Library.csproj" />
   </ItemGroup>
 
   <ItemGroup>
